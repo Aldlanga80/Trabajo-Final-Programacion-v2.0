@@ -25,3 +25,12 @@ export const registerUser = async (name: string, email: string, password: string
 
   return { user, token };
 };
+
+export const loginUser = async (email: string, password: string) => {
+  const user = await User.findOne({ email });
+  if (!user) throw new Error("Credenciales inválidas");
+  const match = await bcrypt.compare(password, user.password);
+  if (!match) throw new Error("Credenciales inválidas");
+  const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+  return { user, token };
+};
