@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express";
 import Product from "../models/Product";
-import Product from "../models/Product";
 
 export const listProducts = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -44,3 +43,34 @@ export const getProduct = async (req: Request, res: Response, next: NextFunction
     next(err);
   }
 };
+
+export const createProduct = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const data = req.body;
+    const product = await Product.create(data);
+    res.status(201).json(product);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const updateProduct = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!product) return res.status(404).json({ error: "Producto no encontrado" })
+    res.json(product);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const deleteProduct = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const deleted = await Product.findByIdAndDelete(req.params.id);
+    if (!deleted) return res.status(404).json({ error: "Producto no encontrado" });
+    res.json({ message: "Eliminado" });
+  } catch (err) {
+    next(err);
+  }
+};
+
